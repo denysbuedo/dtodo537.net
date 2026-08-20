@@ -14,7 +14,8 @@ export default function HomePage() {
         <div className="home-actions">
           <Link href="/register">Crear cuenta</Link>
           <Link href="/login">Iniciar sesión</Link>
-          <Button aria-label="Estado de la base tecnica">M1 en desarrollo</Button>
+          <Link href="/onboarding">Crear negocio</Link>
+          <Button aria-label="Estado de tenant y negocio">M2 en desarrollo</Button>
         </div>
       </section>
     </main>

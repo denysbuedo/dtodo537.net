@@ -119,10 +119,12 @@ main {
   font-weight: 650;
 }
 
-.auth-form input {
+.auth-form input,
+.auth-form select {
   min-height: 44px;
   border: 1px solid #c9cbc3;
   border-radius: 8px;
+  background: white;
   color: var(--foreground);
   font: inherit;
   padding: 0 12px;
@@ -145,4 +147,36 @@ main {
   color: var(--muted);
   line-height: 1.5;
   overflow-wrap: anywhere;
+}
+
+.tenant-list {
+  display: grid;
+  gap: 12px;
+  margin: 8px 0;
+}
+
+.tenant-list-header {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.tenant-list-header h2 {
+  font-size: 18px;
+  margin: 0;
+}
+
+.tenant-summary {
+  border: 1px solid #d7d9d1;
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+}
+
+.tenant-summary p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
 }

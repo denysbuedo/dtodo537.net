@@ -2,7 +2,7 @@
 
 Plataforma SaaS multi-tenant de showrooms y catalogos comerciales digitales.
 
-Este repositorio implementa el MVP por hitos. El estado actual de esta rama corresponde a **M1 - Identity & Sessions**, construido sobre **M0 - Foundation**.
+Este repositorio implementa el MVP por hitos. El estado actual de esta rama corresponde a **M2 - Tenant & Business**, construido sobre M0 y M1.
 
 ## Requisitos
 
@@ -56,7 +56,7 @@ pnpm prisma:migrate
 pnpm prisma:seed
 ```
 
-El esquema M0 no crea entidades de dominio. La API valida PostgreSQL mediante `SELECT 1`.
+Las migraciones actuales cubren foundation, identidad/sesiones y el núcleo Tenant & Business. La API valida PostgreSQL mediante `SELECT 1`.
 
 ## Ejecucion
 
@@ -122,6 +122,36 @@ Endpoints:
 
 En `development` y `test`, los endpoints de verificacion y recuperacion pueden devolver `devToken` para probar el flujo sin servicio de correo. No se debe usar ese comportamiento en produccion.
 
+## Tenant & Business local
+
+M2 agrega el núcleo multi-tenant funcional: `Tenant`, `Membership`, `Business`, `Showroom`, `BusinessType`, `SubscriptionPlan` y `Subscription`.
+
+Pantallas:
+
+- `http://localhost:3000/onboarding`
+- `http://localhost:3000/account`
+
+Endpoints:
+
+- `POST /api/v1/tenants/provision`
+- `GET /api/v1/tenants`
+- `GET /api/v1/tenant-context`
+- `GET /api/v1/tenants/resolve/{subdomain}`
+
+`POST /api/v1/tenants/provision` requiere sesión autenticada y usuario `ACTIVE`.
+
+Body:
+
+```json
+{
+  "businessName": "Muebles Habana",
+  "businessTypeCode": "retail",
+  "subdomain": "muebles-habana"
+}
+```
+
+El provisioning crea transaccionalmente Tenant, Membership `BUSINESS_OWNER`, Business, Showroom y Subscription inicial. El `tenantId` recibido desde UI solo se usa como selector y siempre se valida contra `Membership`.
+
 ## Calidad
 
 ```bash
@@ -153,4 +183,4 @@ infrastructure/
 
 ## Alcance actual
 
-M0 no implementa identidad, autenticacion, tenants, negocios, productos, showrooms, WhatsApp ni portal de descubrimiento. Esos modulos pertenecen a hitos posteriores.
+M2 no implementa catálogo, media, temas visuales, publicación pública avanzada, WhatsApp, analytics ni administración global. Esos módulos pertenecen a hitos posteriores.
