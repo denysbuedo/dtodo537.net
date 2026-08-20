@@ -13,6 +13,7 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "3.726.1",
     "@dtodo/config": "workspace:*",
     "@dtodo/types": "workspace:*",
     "@dtodo/validation": "workspace:*",
@@ -26,6 +27,7 @@
     "class-validator": "0.14.1",
     "cookie": "1.0.2",
     "ioredis": "5.4.2",
+    "multer": "1.4.5-lts.1",
     "pino": "9.6.0",
     "reflect-metadata": "0.2.2",
     "rxjs": "7.8.1",
@@ -36,6 +38,7 @@
     "@nestjs/testing": "10.4.15",
     "@types/cookie": "0.6.0",
     "@types/express": "5.0.0",
+    "@types/multer": "1.4.12",
     "@types/supertest": "6.0.2",
     "eslint": "9.18.0",
     "supertest": "7.0.0",
