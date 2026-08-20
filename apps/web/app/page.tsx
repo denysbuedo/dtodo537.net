@@ -1,4 +1,5 @@
 import { Button } from '@dtodo/ui';
+import Link from 'next/link';
 
 export default function HomePage() {
   return (
@@ -10,7 +11,11 @@ export default function HomePage() {
           Base inicial para construir la plataforma de showrooms comerciales sin adelantar modulos
           funcionales.
         </p>
-        <Button aria-label="Estado de la base tecnica">M0 listo para desarrollo</Button>
+        <div className="home-actions">
+          <Link href="/register">Crear cuenta</Link>
+          <Link href="/login">Iniciar sesión</Link>
+          <Button aria-label="Estado de la base tecnica">M1 en desarrollo</Button>
+        </div>
       </section>
     </main>
   );

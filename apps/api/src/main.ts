@@ -15,6 +15,10 @@ async function bootstrap() {
   const logger = app.get(PinoLoggerService);
 
   app.useLogger(logger);
+  app.enableCors({
+    origin: config.WEB_URL,
+    credentials: true,
+  });
   app.setGlobalPrefix('api/v1');
   app.enableShutdownHooks();
   app.useGlobalPipes(

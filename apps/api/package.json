@@ -21,8 +21,10 @@
     "@nestjs/platform-express": "10.4.15",
     "@nestjs/swagger": "8.1.1",
     "@prisma/client": "6.2.1",
+    "argon2": "0.41.1",
     "class-transformer": "0.5.1",
     "class-validator": "0.14.1",
+    "cookie": "1.0.2",
     "ioredis": "5.4.2",
     "pino": "9.6.0",
     "reflect-metadata": "0.2.2",
@@ -32,6 +34,7 @@
   "devDependencies": {
     "@dtodo/eslint-config": "workspace:*",
     "@nestjs/testing": "10.4.15",
+    "@types/cookie": "0.6.0",
     "@types/express": "5.0.0",
     "@types/supertest": "6.0.2",
     "eslint": "9.18.0",
