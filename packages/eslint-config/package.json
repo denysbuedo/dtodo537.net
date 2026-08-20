@@ -1,0 +1,26 @@
+{
+  "name": "@dtodo/eslint-config",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./base": "./base.mjs",
+    "./next": "./next.mjs"
+  },
+  "dependencies": {
+    "@eslint/js": "9.18.0",
+    "@next/eslint-plugin-next": "15.1.4",
+    "eslint-config-prettier": "9.1.0",
+    "typescript-eslint": "8.20.0"
+  },
+  "devDependencies": {
+    "eslint": "9.18.0",
+    "typescript": "5.7.3"
+  },
+  "scripts": {
+    "build": "node -e \"process.exit(0)\"",
+    "lint": "node -e \"process.exit(0)\"",
+    "typecheck": "node -e \"process.exit(0)\"",
+    "test": "node -e \"process.exit(0)\""
+  }
+}

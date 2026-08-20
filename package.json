@@ -7,11 +7,11 @@
     "node": ">=22.0.0"
   },
   "scripts": {
-    "dev": "pnpm -r --parallel dev",
-    "build": "pnpm -r --sort build",
-    "lint": "pnpm -r --sort lint",
-    "typecheck": "pnpm -r --sort typecheck",
-    "test": "pnpm -r --sort test",
+    "dev": "corepack pnpm -r --sort build && corepack pnpm -r --parallel dev",
+    "build": "corepack pnpm -r --sort build",
+    "lint": "corepack pnpm --filter @dtodo/config --filter @dtodo/types --filter @dtodo/validation --filter @dtodo/ui build && corepack pnpm -r --sort lint",
+    "typecheck": "corepack pnpm -r --sort typecheck",
+    "test": "corepack pnpm -r --sort test",
     "format": "prettier --write .",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
@@ -19,6 +19,7 @@
     "prisma:seed": "tsx prisma/seed/index.ts"
   },
   "devDependencies": {
+    "@prisma/client": "6.2.1",
     "@types/node": "22.10.6",
     "prettier": "3.4.2",
     "prisma": "6.2.1",

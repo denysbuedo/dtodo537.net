@@ -22,6 +22,8 @@ corepack prepare pnpm@9.15.4 --activate
 pnpm install
 ```
 
+Si Windows no permite crear el shim global de `pnpm`, usa `corepack pnpm` en lugar de `pnpm`.
+
 ## Configuracion
 
 ```bash
