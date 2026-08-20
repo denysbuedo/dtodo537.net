@@ -125,11 +125,18 @@ export default function CatalogManagePage({ params }: { params: Promise<{ busine
     event.preventDefault();
     setMessage('Subiendo imagen...');
     const formData = new FormData(event.currentTarget);
-    const response = await fetch(`${apiBaseUrl}/products/${productId}/images/upload`, {
-      method: 'POST',
-      credentials: 'include',
-      body: formData,
-    });
+    let response: Response;
+
+    try {
+      response = await fetch(`${apiBaseUrl}/products/${productId}/images/upload`, {
+        method: 'POST',
+        credentials: 'include',
+        body: formData,
+      });
+    } catch {
+      setMessage('No se pudo conectar con la API para subir la imagen.');
+      return;
+    }
 
     await handleMutation(response, 'Imagen subida. El worker procesará las variantes.');
     event.currentTarget.reset();
