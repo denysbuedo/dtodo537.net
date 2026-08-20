@@ -35,8 +35,15 @@ export function createRedisClient(options: RedisConnectionOptions): RedisClient 
 }
 
 export async function validateRedisConnection(redis: RedisClient): Promise<void> {
-  if (redis.status !== 'ready') {
+  if (redis.status === 'wait' || redis.status === 'end') {
     await redis.connect();
+  }
+
+  if (redis.status === 'connecting' || redis.status === 'connect') {
+    await new Promise<void>((resolve, reject) => {
+      redis.once('ready', () => resolve());
+      redis.once('error', (error: Error) => reject(error));
+    });
   }
 
   await redis.ping();
