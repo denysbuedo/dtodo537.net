@@ -33,7 +33,7 @@ async function bootstrap() {
   if (config.ENABLE_OPENAPI) {
     const documentConfig = new DocumentBuilder()
       .setTitle('dtodo537 API')
-      .setDescription('M2 Tenant & Business API')
+      .setDescription('M3 Showroom & Themes API')
       .setVersion('0.1.0')
       .build();
     const document = SwaggerModule.createDocument(app, documentConfig);

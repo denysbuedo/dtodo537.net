@@ -54,6 +54,12 @@ export class TenancyService {
       throw new BadRequestException('El plan inicial no está configurado.');
     }
 
+    const theme = await this.prisma.theme.findUnique({ where: { code: 'minimal' } });
+
+    if (!theme) {
+      throw new BadRequestException('El theme inicial no está configurado.');
+    }
+
     try {
       const result = await this.prisma.$transaction(async (tx) => {
         const tenant = await tx.tenant.create({
@@ -88,7 +94,23 @@ export class TenancyService {
             tenantId: tenant.id,
             businessId: business.id,
             subdomain,
+            themeId: theme.id,
             status: 'DRAFT',
+          },
+        });
+
+        await tx.themeConfiguration.create({
+          data: {
+            tenantId: tenant.id,
+            showroomId: showroom.id,
+            themeId: theme.id,
+            primaryColor: '#0f766e',
+            secondaryColor: '#1d1d1b',
+            accentColor: '#f59e0b',
+            fontFamily: 'Inter',
+            coverStyle: 'solid',
+            productCardStyle: 'compact',
+            configuration: { borderRadius: '8px' },
           },
         });
 
@@ -324,6 +346,14 @@ export class TenancyService {
             name: businessType.name,
           }
         : null,
+      showroom:
+        'showroom' in business && business.showroom
+          ? {
+              id: business.showroom.id,
+              subdomain: business.showroom.subdomain,
+              status: business.showroom.status,
+            }
+          : null,
     };
   }
 
@@ -339,7 +369,13 @@ export class TenancyService {
 }
 
 type TenantShape = Tenant;
-type BusinessShape = Business;
+type BusinessShape = Business & {
+  showroom?: {
+    id: string;
+    subdomain: string;
+    status: string;
+  } | null;
+};
 type BusinessTypeShape = BusinessType;
 type ShowroomShape = Showroom;
 

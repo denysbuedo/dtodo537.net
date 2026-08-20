@@ -38,6 +38,9 @@ describe('TenancyService', () => {
           status: 'DRAFT',
         }),
       },
+      themeConfiguration: {
+        create: vi.fn().mockResolvedValue({ id: 'theme-configuration-1' }),
+      },
       subscription: {
         create: vi.fn().mockResolvedValue({
           id: 'subscription-1',
@@ -59,6 +62,13 @@ describe('TenancyService', () => {
           id: 'plan-1',
           code: 'free',
           name: 'Free',
+        }),
+      },
+      theme: {
+        findUnique: vi.fn().mockResolvedValue({
+          id: 'theme-1',
+          code: 'minimal',
+          name: 'Minimal',
         }),
       },
       $transaction: vi.fn().mockImplementation((callback: (transaction: typeof tx) => unknown) =>
