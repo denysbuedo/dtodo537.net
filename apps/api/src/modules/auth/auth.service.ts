@@ -2,6 +2,7 @@ import { BadRequestException, Inject, Injectable, UnauthorizedException } from '
 import { randomBytes, createHash } from 'node:crypto';
 import * as argon2 from 'argon2';
 import type { User } from '@prisma/client';
+import { isEmail } from 'class-validator';
 import { PrismaService } from '../../shared/prisma/prisma.service';
 import type { LoginDto } from './dto/login.dto';
 import type { RegisterDto } from './dto/register.dto';
@@ -17,20 +18,23 @@ export class AuthService {
 
   async register(dto: RegisterDto) {
     const email = this.normalizeEmail(dto.email);
+    const password = this.requirePassword(dto.password);
+    const firstName = this.requireString(dto.firstName, 'El nombre es obligatorio.').trim();
+    const lastName = this.requireString(dto.lastName, 'El apellido es obligatorio.').trim();
     const existingUser = await this.prisma.user.findUnique({ where: { email } });
 
     if (existingUser) {
       throw new BadRequestException('Ya existe una cuenta con ese correo.');
     }
 
-    const passwordHash = await argon2.hash(dto.password, { type: argon2.argon2id });
+    const passwordHash = await argon2.hash(password, { type: argon2.argon2id });
     const token = this.createToken();
 
     const user = await this.prisma.user.create({
       data: {
         email,
-        firstName: dto.firstName.trim(),
-        lastName: dto.lastName.trim(),
+        firstName,
+        lastName,
         passwordHash,
         emailVerificationTokens: {
           create: {
@@ -49,9 +53,10 @@ export class AuthService {
 
   async login(dto: LoginDto) {
     const email = this.normalizeEmail(dto.email);
+    const password = this.requireString(dto.password, 'La contraseña es obligatoria.');
     const user = await this.prisma.user.findUnique({ where: { email } });
 
-    if (!user || !(await argon2.verify(user.passwordHash, dto.password))) {
+    if (!user || !(await argon2.verify(user.passwordHash, password))) {
       throw new UnauthorizedException('Correo o contraseña incorrectos.');
     }
 
@@ -139,7 +144,7 @@ export class AuthService {
   }
 
   async verifyEmail(token: string) {
-    const tokenHash = this.hashToken(token);
+    const tokenHash = this.hashToken(this.requireString(token, 'El token es obligatorio.'));
     const storedToken = await this.prisma.emailVerificationToken.findUnique({
       where: { tokenHash },
       include: { user: true },
@@ -191,7 +196,8 @@ export class AuthService {
   }
 
   async resetPassword(token: string, password: string) {
-    const tokenHash = this.hashToken(token);
+    const tokenHash = this.hashToken(this.requireString(token, 'El token es obligatorio.'));
+    const nextPassword = this.requirePassword(password);
     const storedToken = await this.prisma.passwordResetToken.findUnique({
       where: { tokenHash },
     });
@@ -200,7 +206,7 @@ export class AuthService {
       throw new BadRequestException('El token de recuperación no es válido.');
     }
 
-    const passwordHash = await argon2.hash(password, { type: argon2.argon2id });
+    const passwordHash = await argon2.hash(nextPassword, { type: argon2.argon2id });
 
     await this.prisma.$transaction([
       this.prisma.passwordResetToken.update({
@@ -237,8 +243,32 @@ export class AuthService {
     return session.user;
   }
 
-  private normalizeEmail(email: string) {
-    return email.trim().toLowerCase();
+  private normalizeEmail(email: unknown) {
+    const normalizedEmail = this.requireString(email, 'El correo es obligatorio.').trim().toLowerCase();
+
+    if (!isEmail(normalizedEmail)) {
+      throw new BadRequestException('El correo no es válido.');
+    }
+
+    return normalizedEmail;
+  }
+
+  private requirePassword(password: unknown) {
+    const value = this.requireString(password, 'La contraseña es obligatoria.');
+
+    if (value.length < 12) {
+      throw new BadRequestException('La contraseña debe tener al menos 12 caracteres.');
+    }
+
+    return value;
+  }
+
+  private requireString(value: unknown, message: string) {
+    if (typeof value !== 'string' || value.trim().length === 0) {
+      throw new BadRequestException(message);
+    }
+
+    return value;
   }
 
   private createToken() {

@@ -1,5 +1,15 @@
-import { Body, Controller, Get, Inject, Post, Req, Res, UnauthorizedException } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Post,
+  Req,
+  Res,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
 import type { Request, Response } from 'express';
 import { parse, serialize } from 'cookie';
 import { AuthService } from './auth.service';
@@ -17,13 +27,15 @@ export class AuthController {
   constructor(@Inject(AuthService) private readonly authService: AuthService) {}
 
   @Post('register')
-  register(@Body() dto: RegisterDto) {
-    return this.authService.register(dto);
+  @ApiBody({ type: RegisterDto })
+  register(@Body() dto: RegisterDto | undefined) {
+    return this.authService.register(this.requireBody(dto));
   }
 
   @Post('login')
-  async login(@Body() dto: LoginDto, @Res({ passthrough: true }) response: Response) {
-    const result = await this.authService.login(dto);
+  @ApiBody({ type: LoginDto })
+  async login(@Body() dto: LoginDto | undefined, @Res({ passthrough: true }) response: Response) {
+    const result = await this.authService.login(this.requireBody(dto));
     this.setSessionCookie(response, result.sessionToken, result.expiresAt);
 
     return { user: result.user };
@@ -54,18 +66,30 @@ export class AuthController {
   }
 
   @Post('email/verify')
-  verifyEmail(@Body() dto: VerifyEmailDto) {
-    return this.authService.verifyEmail(dto.token);
+  @ApiBody({ type: VerifyEmailDto })
+  verifyEmail(@Body() dto: VerifyEmailDto | undefined) {
+    return this.authService.verifyEmail(this.requireBody(dto).token);
   }
 
   @Post('password/reset/request')
-  requestPasswordReset(@Body() dto: RequestPasswordResetDto) {
-    return this.authService.requestPasswordReset(dto.email);
+  @ApiBody({ type: RequestPasswordResetDto })
+  requestPasswordReset(@Body() dto: RequestPasswordResetDto | undefined) {
+    return this.authService.requestPasswordReset(this.requireBody(dto).email);
   }
 
   @Post('password/reset')
-  resetPassword(@Body() dto: ResetPasswordDto) {
-    return this.authService.resetPassword(dto.token, dto.password);
+  @ApiBody({ type: ResetPasswordDto })
+  resetPassword(@Body() dto: ResetPasswordDto | undefined) {
+    const body = this.requireBody(dto);
+    return this.authService.resetPassword(body.token, body.password);
+  }
+
+  private requireBody<T>(dto: T | undefined): T {
+    if (!dto) {
+      throw new BadRequestException('El cuerpo de la solicitud es obligatorio.');
+    }
+
+    return dto;
   }
 
   private readSessionCookie(request: Request): string | undefined {

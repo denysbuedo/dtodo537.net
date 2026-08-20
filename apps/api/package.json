@@ -5,7 +5,7 @@
   "type": "commonjs",
   "main": "dist/main.js",
   "scripts": {
-    "dev": "corepack pnpm --filter @dtodo/config build && corepack pnpm --filter @dtodo/types build && corepack pnpm --filter @dtodo/validation build && tsx watch src/main.ts",
+    "dev": "corepack pnpm --filter @dtodo/config build && corepack pnpm --filter @dtodo/types build && corepack pnpm --filter @dtodo/validation build && tsx watch --exclude \"../../packages/**/dist/**\" src/main.ts",
     "build": "tsc -p tsconfig.build.json",
     "start": "node dist/main.js",
     "lint": "eslint .",

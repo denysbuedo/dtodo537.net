@@ -1,4 +1,4 @@
-import { UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { describe, expect, it, vi } from 'vitest';
 import * as argon2 from 'argon2';
 import { AuthService } from './auth.service';
@@ -49,5 +49,13 @@ describe('AuthService', () => {
         password: 'wrong-password',
       }),
     ).rejects.toThrow(UnauthorizedException);
+  });
+
+  it('rejects password reset requests without email as bad requests', async () => {
+    const service = new AuthService({} as never);
+
+    await expect(service.requestPasswordReset(undefined as never)).rejects.toThrow(
+      BadRequestException,
+    );
   });
 });
