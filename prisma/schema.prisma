@@ -125,6 +125,25 @@ enum SubscriptionStatus {
   CANCELED
 }
 
+enum ThemeStatus {
+  ACTIVE
+  DISABLED
+}
+
+enum ContactChannelType {
+  PHONE
+  EMAIL
+}
+
+enum SocialProfileType {
+  FACEBOOK
+  INSTAGRAM
+  TIKTOK
+  X
+  LINKEDIN
+  WEBSITE
+}
+
 model Tenant {
   id        String       @id @default(uuid())
   name      String
@@ -134,10 +153,14 @@ model Tenant {
   updatedAt DateTime     @updatedAt
   deletedAt DateTime?
 
-  memberships   Membership[]
-  businesses    Business[]
-  showrooms     Showroom[]
-  subscriptions Subscription[]
+  memberships            Membership[]
+  businesses             Business[]
+  showrooms              Showroom[]
+  subscriptions          Subscription[]
+  contactChannels        ContactChannel[]
+  socialProfiles         SocialProfile[]
+  whatsappConfigurations WhatsAppConfiguration[]
+  themeConfigurations    ThemeConfiguration[]
 
   @@map("tenants")
 }
@@ -180,6 +203,12 @@ model Business {
   legalName        String?
   description      String?
   shortDescription String?
+  address          String?
+  phone            String?
+  email            String?
+  timezone         String?
+  logoUrl          String?
+  coverImageUrl    String?
   logoMediaId      String?
   coverMediaId     String?
   status           BusinessStatus @default(DRAFT)
@@ -188,9 +217,12 @@ model Business {
   updatedAt        DateTime       @updatedAt
   deletedAt        DateTime?
 
-  tenant       Tenant        @relation(fields: [tenantId], references: [id], onDelete: Restrict)
-  businessType BusinessType? @relation(fields: [businessTypeId], references: [id], onDelete: SetNull)
-  showroom     Showroom?
+  tenant                Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  businessType          BusinessType?          @relation(fields: [businessTypeId], references: [id], onDelete: SetNull)
+  showroom              Showroom?
+  contactChannels       ContactChannel[]
+  socialProfiles        SocialProfile[]
+  whatsappConfiguration WhatsAppConfiguration?
 
   @@unique([tenantId, slug])
   @@index([tenantId])
@@ -199,20 +231,121 @@ model Business {
 }
 
 model Showroom {
-  id         String         @id @default(uuid())
+  id             String         @id @default(uuid())
+  tenantId       String
+  businessId     String         @unique
+  subdomain      String         @unique
+  customDomain   String?
+  status         ShowroomStatus @default(DRAFT)
+  themeId        String?
+  seoTitle       String?
+  seoDescription String?
+  publishedAt    DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  deletedAt      DateTime?
+
+  tenant             Tenant              @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  business           Business            @relation(fields: [businessId], references: [id], onDelete: Restrict)
+  theme              Theme?              @relation(fields: [themeId], references: [id], onDelete: SetNull)
+  themeConfiguration ThemeConfiguration?
+
+  @@index([tenantId])
+  @@index([themeId])
+  @@map("showrooms")
+}
+
+model Theme {
+  id             String      @id @default(uuid())
+  code           String      @unique
+  name           String
+  description    String?
+  previewMediaId String?
+  version        String
+  status         ThemeStatus @default(ACTIVE)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  showrooms           Showroom[]
+  themeConfigurations ThemeConfiguration[]
+
+  @@map("themes")
+}
+
+model ThemeConfiguration {
+  id               String   @id @default(uuid())
+  tenantId         String
+  showroomId       String   @unique
+  themeId          String
+  primaryColor     String
+  secondaryColor   String
+  accentColor      String
+  fontFamily       String
+  coverStyle       String
+  productCardStyle String
+  configuration    Json?
+  updatedAt        DateTime @updatedAt
+
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  showroom Showroom @relation(fields: [showroomId], references: [id], onDelete: Restrict)
+  theme    Theme    @relation(fields: [themeId], references: [id], onDelete: Restrict)
+
+  @@index([tenantId])
+  @@index([themeId])
+  @@map("theme_configurations")
+}
+
+model ContactChannel {
+  id         String             @id @default(uuid())
   tenantId   String
-  businessId String         @unique
-  subdomain  String         @unique
-  status     ShowroomStatus @default(DRAFT)
-  createdAt  DateTime       @default(now())
-  updatedAt  DateTime       @updatedAt
-  deletedAt  DateTime?
+  businessId String
+  type       ContactChannelType
+  value      String
+  label      String?
+  isPrimary  Boolean            @default(false)
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
 
   tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   business Business @relation(fields: [businessId], references: [id], onDelete: Restrict)
 
   @@index([tenantId])
-  @@map("showrooms")
+  @@index([businessId])
+  @@map("contact_channels")
+}
+
+model SocialProfile {
+  id         String            @id @default(uuid())
+  tenantId   String
+  businessId String
+  type       SocialProfileType
+  url        String
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  business Business @relation(fields: [businessId], references: [id], onDelete: Restrict)
+
+  @@index([tenantId])
+  @@index([businessId])
+  @@map("social_profiles")
+}
+
+model WhatsAppConfiguration {
+  id             String   @id @default(uuid())
+  tenantId       String
+  businessId     String   @unique
+  phoneNumber    String
+  defaultMessage String?
+  enabled        Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  business Business @relation(fields: [businessId], references: [id], onDelete: Restrict)
+
+  @@index([tenantId])
+  @@map("whatsapp_configurations")
 }
 
 model SubscriptionPlan {
