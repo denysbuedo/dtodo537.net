@@ -30,6 +30,21 @@ export class RedisProvider implements OnModuleDestroy {
     await validateRedisConnection(this.redis);
   }
 
+  async get(key: string) {
+    await this.ping();
+    return this.redis.get(key);
+  }
+
+  async setJson(key: string, value: unknown, ttlSeconds: number) {
+    await this.ping();
+    await this.redis.set(key, JSON.stringify(value), 'EX', ttlSeconds);
+  }
+
+  async del(key: string) {
+    await this.ping();
+    await this.redis.del(key);
+  }
+
   get client() {
     return this.redis;
   }

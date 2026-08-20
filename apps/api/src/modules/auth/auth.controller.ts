@@ -18,8 +18,7 @@ import { RegisterDto } from './dto/register.dto';
 import { RequestPasswordResetDto } from './dto/request-password-reset.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { VerifyEmailDto } from './dto/verify-email.dto';
-
-const SESSION_COOKIE_NAME = 'dtodo_session';
+import { SESSION_COOKIE_NAME } from './auth.constants';
 
 @ApiTags('auth')
 @Controller('auth')
