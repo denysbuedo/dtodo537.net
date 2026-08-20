@@ -212,16 +212,16 @@ export default function ShowroomManagePage({ params }: { params: Promise<{ showr
             <input name="whatsappMessage" defaultValue={showroom.whatsapp?.defaultMessage ?? ''} />
           </label>
           <label>
-            Instagram
-            <input name="instagramUrl" type="url" defaultValue={instagram ?? ''} />
+            Instagram opcional
+            <input name="instagramUrl" type="url" placeholder="https://instagram.com/tu-negocio" defaultValue={instagram ?? ''} />
           </label>
           <label>
-            Facebook
-            <input name="facebookUrl" type="url" defaultValue={facebook ?? ''} />
+            Facebook opcional
+            <input name="facebookUrl" type="url" placeholder="https://facebook.com/tu-negocio" defaultValue={facebook ?? ''} />
           </label>
           <label>
-            Web
-            <input name="websiteUrl" type="url" defaultValue={website ?? ''} />
+            Web opcional
+            <input name="websiteUrl" type="url" placeholder="https://tudominio.com" defaultValue={website ?? ''} />
           </label>
           <button type="submit">Guardar contacto</button>
         </form>

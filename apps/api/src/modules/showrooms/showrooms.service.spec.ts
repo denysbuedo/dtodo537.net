@@ -62,6 +62,32 @@ describe('ShowroomsService', () => {
       BadRequestException,
     );
   });
+
+  it('updates contact information without requiring social profiles', async () => {
+    const transaction = vi.fn().mockResolvedValue([]);
+    const service = new ShowroomsService(
+      {
+        $transaction: transaction,
+        showroom: { findUnique: vi.fn().mockResolvedValue(showroomFixture()) },
+        membership: { findFirst: vi.fn().mockResolvedValue({ id: 'membership-1' }) },
+        business: { update: vi.fn() },
+        contactChannel: { deleteMany: vi.fn(), createMany: vi.fn() },
+        socialProfile: { deleteMany: vi.fn(), createMany: vi.fn() },
+        whatsAppConfiguration: { deleteMany: vi.fn() },
+      } as never,
+      { del: vi.fn() } as never,
+      { currentUser: vi.fn().mockResolvedValue({ id: 'user-1' }) } as never,
+    );
+
+    await expect(
+      service.updateContact('session-token', 'showroom-1', { phone: '+5355555555' }),
+    ).resolves.toMatchObject({
+      id: 'showroom-1',
+      business: { name: 'Muebles Habana' },
+      socialProfiles: [],
+    });
+    expect(transaction).toHaveBeenCalledOnce();
+  });
 });
 
 function showroomFixture(overrides: Record<string, unknown> = {}) {
