@@ -46,7 +46,7 @@ export class ShowroomsService {
     dto: UpdateBusinessProfileDto,
   ) {
     const showroom = await this.requireShowroomAccess(sessionToken, showroomId);
-    const business = await this.prisma.business.update({
+    await this.prisma.business.update({
       where: { id: showroom.businessId },
       data: {
         name: this.cleanOptional(dto.name) ?? undefined,
@@ -64,9 +64,7 @@ export class ShowroomsService {
 
     await this.invalidatePublicCache(showroom.subdomain);
 
-    return {
-      business: this.toBusinessResponse(business),
-    };
+    return this.getManageState(sessionToken, showroomId);
   }
 
   async updateContact(sessionToken: string | undefined, showroomId: string, dto: UpdateContactDto) {

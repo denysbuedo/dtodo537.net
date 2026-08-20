@@ -80,7 +80,7 @@ export default function ShowroomManagePage({ params }: { params: Promise<{ showr
     event.preventDefault();
     setMessage('Guardando...');
     const formData = new FormData(event.currentTarget);
-    const payload = Object.fromEntries(formData.entries());
+    const payload = toJsonPayload(formData);
 
     const response = await fetch(`${apiBaseUrl}/showrooms/${routeParams.showroomId}/${path}`, {
       method: 'PATCH',
@@ -96,7 +96,12 @@ export default function ShowroomManagePage({ params }: { params: Promise<{ showr
       return;
     }
 
-    setShowroom(result as ShowroomState);
+    if (!isShowroomState(result)) {
+      setMessage('La respuesta del servidor no tiene el formato esperado.');
+      return;
+    }
+
+    setShowroom(result);
     setMessage('Cambios guardados.');
   }
 
@@ -116,7 +121,12 @@ export default function ShowroomManagePage({ params }: { params: Promise<{ showr
       return;
     }
 
-    setShowroom(result as ShowroomState);
+    if (!isShowroomState(result)) {
+      setMessage('La respuesta del servidor no tiene el formato esperado.');
+      return;
+    }
+
+    setShowroom(result);
     setMessage(publish ? 'Showroom publicado.' : 'Showroom en borrador.');
   }
 
@@ -174,11 +184,11 @@ export default function ShowroomManagePage({ params }: { params: Promise<{ showr
           </label>
           <label>
             Logo URL
-            <input name="logoUrl" defaultValue={showroom.business.logoUrl ?? ''} />
+            <input name="logoUrl" type="url" defaultValue={showroom.business.logoUrl ?? ''} />
           </label>
           <label>
             Portada URL
-            <input name="coverImageUrl" defaultValue={showroom.business.coverImageUrl ?? ''} />
+            <input name="coverImageUrl" type="url" defaultValue={showroom.business.coverImageUrl ?? ''} />
           </label>
           <button type="submit">Guardar perfil</button>
         </form>
@@ -191,7 +201,7 @@ export default function ShowroomManagePage({ params }: { params: Promise<{ showr
           </label>
           <label>
             Correo
-            <input name="email" defaultValue={showroom.business.email ?? ''} />
+            <input name="email" type="email" defaultValue={showroom.business.email ?? ''} />
           </label>
           <label>
             WhatsApp
@@ -203,15 +213,15 @@ export default function ShowroomManagePage({ params }: { params: Promise<{ showr
           </label>
           <label>
             Instagram
-            <input name="instagramUrl" defaultValue={instagram ?? ''} />
+            <input name="instagramUrl" type="url" defaultValue={instagram ?? ''} />
           </label>
           <label>
             Facebook
-            <input name="facebookUrl" defaultValue={facebook ?? ''} />
+            <input name="facebookUrl" type="url" defaultValue={facebook ?? ''} />
           </label>
           <label>
             Web
-            <input name="websiteUrl" defaultValue={website ?? ''} />
+            <input name="websiteUrl" type="url" defaultValue={website ?? ''} />
           </label>
           <button type="submit">Guardar contacto</button>
         </form>
@@ -273,4 +283,16 @@ export default function ShowroomManagePage({ params }: { params: Promise<{ showr
       </section>
     </main>
   );
+}
+
+function toJsonPayload(formData: FormData) {
+  return Object.fromEntries(
+    Array.from(formData.entries())
+      .map(([key, value]) => [key, typeof value === 'string' ? value.trim() : value] as const)
+      .filter(([, value]) => value !== ''),
+  );
+}
+
+function isShowroomState(value: ShowroomState | { error?: { message: string } }): value is ShowroomState {
+  return 'id' in value && typeof value.id === 'string' && 'business' in value && value.business !== null;
 }
