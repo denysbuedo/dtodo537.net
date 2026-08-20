@@ -180,3 +180,249 @@ main {
   color: var(--muted);
   line-height: 1.5;
 }
+
+.settings-page {
+  padding: 24px;
+}
+
+.settings-shell {
+  display: grid;
+  gap: 16px;
+  margin: 0 auto;
+  width: min(100%, 920px);
+}
+
+.settings-header {
+  align-items: flex-start;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+}
+
+.settings-header h1 {
+  margin: 0 0 8px;
+  font-size: 34px;
+}
+
+.settings-header p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.settings-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.settings-actions a,
+.settings-actions button {
+  align-items: center;
+  border: 1px solid #c9cbc3;
+  border-radius: 8px;
+  background: white;
+  color: var(--foreground);
+  display: inline-flex;
+  font: inherit;
+  font-weight: 700;
+  min-height: 40px;
+  padding: 0 12px;
+  text-decoration: none;
+}
+
+.settings-panel {
+  border: 1px solid #d7d9d1;
+  border-radius: 8px;
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+}
+
+.settings-panel h2 {
+  font-size: 20px;
+  margin: 0;
+}
+
+.settings-panel label {
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+  font-weight: 650;
+}
+
+.settings-panel input,
+.settings-panel select,
+.settings-panel textarea {
+  border: 1px solid #c9cbc3;
+  border-radius: 8px;
+  color: var(--foreground);
+  font: inherit;
+  min-height: 42px;
+  padding: 0 12px;
+}
+
+.settings-panel textarea {
+  min-height: 120px;
+  padding-block: 10px;
+  resize: vertical;
+}
+
+.settings-panel button {
+  border: 0;
+  border-radius: 8px;
+  background: var(--accent);
+  color: white;
+  font: inherit;
+  font-weight: 700;
+  min-height: 44px;
+  padding: 0 16px;
+}
+
+.color-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.preview-bar {
+  align-items: center;
+  background: #1d1d1b;
+  color: white;
+  display: flex;
+  font-weight: 700;
+  gap: 16px;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 16px;
+}
+
+.showroom-page {
+  background: #fffdf8;
+  color: var(--showroom-secondary);
+  font-family:
+    var(--showroom-font),
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    sans-serif;
+}
+
+.showroom-hero {
+  display: grid;
+  min-height: 72vh;
+  overflow: hidden;
+  position: relative;
+}
+
+.showroom-cover {
+  height: 100%;
+  inset: 0;
+  object-fit: cover;
+  position: absolute;
+  width: 100%;
+}
+
+.showroom-hero::after {
+  background: linear-gradient(90deg, rgba(255, 253, 248, 0.96), rgba(255, 253, 248, 0.58));
+  content: '';
+  inset: 0;
+  position: absolute;
+}
+
+.showroom-hero-content {
+  align-self: center;
+  display: grid;
+  gap: 16px;
+  max-width: 720px;
+  padding: 48px 24px;
+  position: relative;
+  width: min(100%, 920px);
+  z-index: 1;
+}
+
+.showroom-logo {
+  border-radius: 8px;
+  height: 72px;
+  object-fit: contain;
+  width: 72px;
+}
+
+.showroom-hero h1 {
+  color: var(--showroom-secondary);
+  font-size: 56px;
+  line-height: 1.02;
+  margin: 0;
+}
+
+.showroom-hero p {
+  color: #4b4f49;
+  font-size: 20px;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.showroom-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.showroom-actions a {
+  align-items: center;
+  background: var(--showroom-primary);
+  border-radius: 8px;
+  color: white;
+  display: inline-flex;
+  font-weight: 800;
+  min-height: 44px;
+  padding: 0 14px;
+  text-decoration: none;
+}
+
+.showroom-actions a:nth-child(2n) {
+  background: var(--showroom-accent);
+  color: #1d1d1b;
+}
+
+.showroom-section {
+  border-top: 1px solid #e5e7df;
+  display: grid;
+  gap: 12px;
+  margin: 0 auto;
+  padding: 36px 24px;
+  width: min(100%, 920px);
+}
+
+.showroom-section h2 {
+  font-size: 24px;
+  margin: 0;
+}
+
+.showroom-section p {
+  color: #4b4f49;
+  line-height: 1.65;
+  margin: 0;
+}
+
+.theme-boutique .showroom-hero::after {
+  background: linear-gradient(90deg, rgba(255, 247, 237, 0.96), rgba(255, 247, 237, 0.58));
+}
+
+.theme-commercial .showroom-hero::after {
+  background: linear-gradient(90deg, rgba(239, 246, 255, 0.96), rgba(239, 246, 255, 0.58));
+}
+
+@media (max-width: 680px) {
+  .settings-header,
+  .tenant-list-header {
+    display: grid;
+  }
+
+  .color-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .showroom-hero h1 {
+    font-size: 38px;
+  }
+}

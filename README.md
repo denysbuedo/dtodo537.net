@@ -2,7 +2,7 @@
 
 Plataforma SaaS multi-tenant de showrooms y catalogos comerciales digitales.
 
-Este repositorio implementa el MVP por hitos. El estado actual de esta rama corresponde a **M2 - Tenant & Business**, construido sobre M0 y M1.
+Este repositorio implementa el MVP por hitos. El estado actual de esta rama corresponde a **M3 - Showroom & Themes**, construido sobre M0, M1 y M2.
 
 ## Requisitos
 
@@ -56,7 +56,7 @@ pnpm prisma:migrate
 pnpm prisma:seed
 ```
 
-Las migraciones actuales cubren foundation, identidad/sesiones y el núcleo Tenant & Business. La API valida PostgreSQL mediante `SELECT 1`.
+Las migraciones actuales cubren foundation, identidad/sesiones, Tenant & Business y Showroom & Themes. La API valida PostgreSQL mediante `SELECT 1`.
 
 ## Ejecucion
 
@@ -152,6 +152,35 @@ Body:
 
 El provisioning crea transaccionalmente Tenant, Membership `BUSINESS_OWNER`, Business, Showroom y Subscription inicial. El `tenantId` recibido desde UI solo se usa como selector y siempre se valida contra `Membership`.
 
+## Showroom & Themes local
+
+M3 agrega edición de identidad pública del negocio, contactos, redes, WhatsApp técnico, selector de theme, preview y publicación básica.
+
+Pantallas:
+
+- `http://localhost:3000/manage/showrooms/{showroomId}`
+- `http://localhost:3000/preview/showrooms/{showroomId}`
+- `http://localhost:3000/showrooms/{subdomain}`
+
+Endpoints:
+
+- `GET /api/v1/themes`
+- `GET /api/v1/showrooms/{showroomId}/manage`
+- `PATCH /api/v1/showrooms/{showroomId}/profile`
+- `PATCH /api/v1/showrooms/{showroomId}/contact`
+- `PATCH /api/v1/showrooms/{showroomId}/theme`
+- `PATCH /api/v1/showrooms/{showroomId}/publication`
+- `GET /api/v1/showrooms/{showroomId}/preview`
+- `GET /api/v1/public/showrooms/{subdomain}`
+
+Themes iniciales:
+
+- `minimal`
+- `boutique`
+- `commercial`
+
+Logo y portada se configuran por URL en M3. Upload, procesamiento de imágenes y media pipeline quedan para el hito de catálogo/media.
+
 ## Calidad
 
 ```bash
@@ -183,4 +212,4 @@ infrastructure/
 
 ## Alcance actual
 
-M2 no implementa catálogo, media, temas visuales, publicación pública avanzada, WhatsApp, analytics ni administración global. Esos módulos pertenecen a hitos posteriores.
+M3 no implementa catálogo, productos, media upload/procesamiento, portal de descubrimiento, analytics ni administración global. Esos módulos pertenecen a hitos posteriores.

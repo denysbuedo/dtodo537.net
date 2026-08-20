@@ -35,6 +35,11 @@ interface TenantListResponse {
       businessType: {
         name: string;
       } | null;
+      showroom: {
+        id: string;
+        subdomain: string;
+        status: string;
+      } | null;
     }>;
   }>;
 }
@@ -124,6 +129,14 @@ export default function AccountPage() {
                         {business.name}
                         <br />
                         Business: {business.status}
+                        {business.showroom ? (
+                          <>
+                            <br />
+                            <Link href={`/manage/showrooms/${business.showroom.id}`}>Editar showroom</Link>
+                            <br />
+                            <Link href={`/showrooms/${business.showroom.subdomain}`}>Ver público</Link>
+                          </>
+                        ) : null}
                       </p>
                     ))}
                   </article>
