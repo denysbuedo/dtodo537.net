@@ -5,6 +5,7 @@ import {
   Injectable,
   NotFoundException,
   OnModuleDestroy,
+  ServiceUnavailableException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { Queue } from 'bullmq';
@@ -243,11 +244,17 @@ export class CatalogService implements OnModuleDestroy {
     await this.validateMediaQuota(product.tenantId);
 
     const objectKey = this.buildObjectKey(product.tenantId, file.originalname, file.mimetype);
-    await this.storage.putObject({
-      objectKey,
-      body: file.buffer,
-      contentType: file.mimetype,
-    });
+    try {
+      await this.storage.putObject({
+        objectKey,
+        body: file.buffer,
+        contentType: file.mimetype,
+      });
+    } catch {
+      throw new ServiceUnavailableException(
+        'El storage de imágenes no está disponible. Revisa la configuración S3-compatible.',
+      );
+    }
 
     const result = await this.prisma.$transaction(async (tx) => {
       const imageCount = await tx.productImage.count({ where: { productId: product.id } });

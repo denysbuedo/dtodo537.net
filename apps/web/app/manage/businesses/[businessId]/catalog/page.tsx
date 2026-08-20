@@ -136,7 +136,7 @@ export default function CatalogManagePage({ params }: { params: Promise<{ busine
   }
 
   async function handleMutation(response: Response, successMessage: string) {
-    const result = (await response.json()) as { error?: { message: string } };
+    const result = await readApiResponse(response);
 
     if (!response.ok) {
       setMessage(result.error?.message ?? 'No se pudo completar la acción.');
@@ -289,4 +289,14 @@ function normalizeProductPayload(payload: Record<string, FormDataEntryValue>) {
     ...payload,
     price: typeof payload.price === 'string' && payload.price !== '' ? Number(payload.price) : undefined,
   };
+}
+
+async function readApiResponse(response: Response): Promise<{ error?: { message: string } }> {
+  const contentType = response.headers.get('content-type') ?? '';
+
+  if (!contentType.includes('application/json')) {
+    return { error: { message: 'El servidor no devolvió una respuesta JSON válida.' } };
+  }
+
+  return (await response.json()) as { error?: { message: string } };
 }
