@@ -32,6 +32,12 @@ cp .env.example .env
 
 Edita `.env` con credenciales locales. No guardes secretos reales en Git.
 
+Configuracion local creada para desarrollo:
+
+```text
+DATABASE_URL=postgresql://dtodo537_app:dtodo537_local_password@localhost:5432/dtodo537_dev?schema=public
+```
+
 Variables principales:
 
 - `DATABASE_URL`: conexion PostgreSQL para Prisma y API.
