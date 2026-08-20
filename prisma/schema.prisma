@@ -23,20 +23,21 @@ enum UserStatus {
 }
 
 model User {
-  id              String    @id @default(uuid())
-  email           String    @unique
+  id              String     @id @default(uuid())
+  email           String     @unique
   passwordHash    String
   firstName       String
   lastName        String
   status          UserStatus @default(PENDING)
   emailVerifiedAt DateTime?
   lastLoginAt     DateTime?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
 
   emailVerificationTokens EmailVerificationToken[]
   passwordResetTokens     PasswordResetToken[]
   sessions                Session[]
+  memberships             Membership[]
 
   @@map("users")
 }
@@ -70,17 +71,176 @@ model PasswordResetToken {
 }
 
 model Session {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   userId    String
-  tokenHash String   @unique
+  tokenHash String    @unique
   expiresAt DateTime
   revokedAt DateTime?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([expiresAt])
   @@map("sessions")
+}
+
+enum TenantStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+  BLOCKED
+  CLOSED
+}
+
+enum MembershipRole {
+  BUSINESS_OWNER
+  BUSINESS_MANAGER
+}
+
+enum MembershipStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+enum BusinessStatus {
+  DRAFT
+  PENDING
+  PUBLISHED
+  SUSPENDED
+  ARCHIVED
+}
+
+enum ShowroomStatus {
+  DRAFT
+  PUBLISHED
+  SUSPENDED
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  TRIALING
+  PAST_DUE
+  CANCELED
+}
+
+model Tenant {
+  id        String       @id @default(uuid())
+  name      String
+  slug      String       @unique
+  status    TenantStatus @default(ACTIVE)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  deletedAt DateTime?
+
+  memberships   Membership[]
+  businesses    Business[]
+  showrooms     Showroom[]
+  subscriptions Subscription[]
+
+  @@map("tenants")
+}
+
+model Membership {
+  id        String           @id @default(uuid())
+  tenantId  String
+  userId    String
+  role      MembershipRole
+  status    MembershipStatus @default(ACTIVE)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, tenantId])
+  @@index([tenantId])
+  @@map("memberships")
+}
+
+model BusinessType {
+  id        String   @id @default(uuid())
+  code      String   @unique
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  businesses Business[]
+
+  @@map("business_types")
+}
+
+model Business {
+  id               String         @id @default(uuid())
+  tenantId         String
+  businessTypeId   String?
+  name             String
+  slug             String
+  legalName        String?
+  description      String?
+  shortDescription String?
+  logoMediaId      String?
+  coverMediaId     String?
+  status           BusinessStatus @default(DRAFT)
+  publishedAt      DateTime?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  deletedAt        DateTime?
+
+  tenant       Tenant        @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  businessType BusinessType? @relation(fields: [businessTypeId], references: [id], onDelete: SetNull)
+  showroom     Showroom?
+
+  @@unique([tenantId, slug])
+  @@index([tenantId])
+  @@index([businessTypeId])
+  @@map("businesses")
+}
+
+model Showroom {
+  id         String         @id @default(uuid())
+  tenantId   String
+  businessId String         @unique
+  subdomain  String         @unique
+  status     ShowroomStatus @default(DRAFT)
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+  deletedAt  DateTime?
+
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  business Business @relation(fields: [businessId], references: [id], onDelete: Restrict)
+
+  @@index([tenantId])
+  @@map("showrooms")
+}
+
+model SubscriptionPlan {
+  id        String   @id @default(uuid())
+  code      String   @unique
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  subscriptions Subscription[]
+
+  @@map("subscription_plans")
+}
+
+model Subscription {
+  id        String             @id @default(uuid())
+  tenantId  String
+  planId    String
+  status    SubscriptionStatus @default(TRIALING)
+  startedAt DateTime           @default(now())
+  endsAt    DateTime?
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+
+  tenant Tenant           @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  plan   SubscriptionPlan @relation(fields: [planId], references: [id], onDelete: Restrict)
+
+  @@index([tenantId])
+  @@index([planId])
+  @@map("subscriptions")
 }
