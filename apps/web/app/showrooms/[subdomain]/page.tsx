@@ -15,14 +15,27 @@ export default function PublicShowroomPage({ params }: { params: Promise<{ subdo
   }, []);
 
   async function load() {
-    const response = await fetch(`${apiBaseUrl}/public/showrooms/${routeParams.subdomain}`);
+    const [response, catalogResponse] = await Promise.all([
+      fetch(`${apiBaseUrl}/public/showrooms/${routeParams.subdomain}`),
+      fetch(`${apiBaseUrl}/public/showrooms/${routeParams.subdomain}/products`),
+    ]);
 
     if (!response.ok) {
       setMessage('Showroom no disponible.');
       return;
     }
 
-    setPayload((await response.json()) as ShowroomPayload);
+    const showroomPayload = (await response.json()) as ShowroomPayload;
+    const catalogPayload = catalogResponse.ok
+      ? ((await catalogResponse.json()) as { products: NonNullable<ShowroomPayload['showroom']['products']> })
+      : { products: [] };
+    setPayload({
+      ...showroomPayload,
+      showroom: {
+        ...showroomPayload.showroom,
+        products: catalogPayload.products,
+      },
+    });
     setMessage('');
   }
 

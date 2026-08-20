@@ -134,6 +134,8 @@ export default function AccountPage() {
                             <br />
                             <Link href={`/manage/showrooms/${business.showroom.id}`}>Editar showroom</Link>
                             <br />
+                            <Link href={`/manage/businesses/${business.id}/catalog`}>Editar catálogo</Link>
+                            <br />
                             <Link href={`/showrooms/${business.showroom.subdomain}`}>Ver público</Link>
                           </>
                         ) : null}

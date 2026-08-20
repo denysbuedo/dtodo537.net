@@ -35,6 +35,21 @@ export interface ShowroomPayload {
       defaultMessage: string | null;
       enabled: boolean;
     } | null;
+    products?: Array<{
+      id: string;
+      name: string;
+      slug: string;
+      shortDescription: string | null;
+      price: string | null;
+      currency: string;
+      priceMode: string;
+      availabilityStatus: string;
+      images: Array<{
+        urls: {
+          card: string;
+        };
+      }>;
+    }>;
   };
 }
 
@@ -84,7 +99,24 @@ export function ShowroomView({ payload }: { payload: ShowroomPayload }) {
 
       <section className="showroom-section">
         <h2>Catálogo</h2>
-        <p>El catálogo se habilitará en el siguiente hito.</p>
+        {showroom.products && showroom.products.length > 0 ? (
+          <div className="product-grid">
+            {showroom.products.map((product) => (
+              <a key={product.id} className="product-card" href={`/showrooms/${showroom.subdomain}/productos/${product.slug}`}>
+                {product.images[0] ? <img alt="" src={product.images[0].urls.card} /> : null}
+                <strong>{product.name}</strong>
+                <span>{product.shortDescription ?? product.availabilityStatus}</span>
+                <span>
+                  {product.priceMode === 'CONTACT'
+                    ? 'Consultar precio'
+                    : `${product.price ?? '0'} ${product.currency}`}
+                </span>
+              </a>
+            ))}
+          </div>
+        ) : (
+          <p>Este showroom todavía no tiene productos publicados.</p>
+        )}
       </section>
 
       {showroom.socialProfiles.length > 0 ? (

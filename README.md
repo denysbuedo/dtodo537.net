@@ -2,7 +2,7 @@
 
 Plataforma SaaS multi-tenant de showrooms y catalogos comerciales digitales.
 
-Este repositorio implementa el MVP por hitos. El estado actual de esta rama corresponde a **M3 - Showroom & Themes**, construido sobre M0, M1 y M2.
+Este repositorio implementa el MVP por hitos. El estado actual de esta rama corresponde a **M4 - Catalog & Media**, construido sobre M0, M1, M2 y M3.
 
 ## Requisitos
 
@@ -10,7 +10,7 @@ Este repositorio implementa el MVP por hitos. El estado actual de esta rama corr
 - pnpm 9.x mediante Corepack.
 - PostgreSQL 15 o superior.
 - Redis 7 o superior.
-- Un servicio S3-compatible para etapas posteriores. En M0 solo se valida configuracion.
+- Un servicio S3-compatible accesible desde API y worker para uploads de M4.
 
 No se usa Docker ni Kubernetes.
 
@@ -46,7 +46,7 @@ Variables principales:
 - `WEB_URL`: URL local o publica del frontend.
 - `API_URL`: URL versionada de la API.
 - `SESSION_SECRET`: secreto futuro de sesiones.
-- `S3_*`: preparacion para object storage compatible con S3.
+- `S3_*`: object storage compatible con S3 para upload y procesamiento de imagenes.
 
 ## Prisma
 
@@ -56,7 +56,7 @@ pnpm prisma:migrate
 pnpm prisma:seed
 ```
 
-Las migraciones actuales cubren foundation, identidad/sesiones, Tenant & Business y Showroom & Themes. La API valida PostgreSQL mediante `SELECT 1`.
+Las migraciones actuales cubren foundation, identidad/sesiones, Tenant & Business, Showroom & Themes y Catalog & Media. La API valida PostgreSQL mediante `SELECT 1`.
 
 ## Ejecucion
 
@@ -179,7 +179,37 @@ Themes iniciales:
 - `boutique`
 - `commercial`
 
-Logo y portada se configuran por URL en M3. Upload, procesamiento de imágenes y media pipeline quedan para el hito de catálogo/media.
+Logo y portada se configuran por URL en M3. El pipeline de media de M4 queda enfocado en imagenes de productos.
+
+## Catalog & Media local
+
+M4 agrega categorias, productos, atributos simples, imagenes de producto, upload hacia S3-compatible, procesamiento con worker y ficha publica de producto.
+
+Pantallas:
+
+- `http://localhost:3000/manage/businesses/{businessId}/catalog`
+- `http://localhost:3000/showrooms/{subdomain}`
+- `http://localhost:3000/showrooms/{subdomain}/productos/{slug}`
+
+Endpoints:
+
+- `GET /api/v1/businesses/{businessId}/catalog`
+- `POST /api/v1/businesses/{businessId}/categories`
+- `PATCH /api/v1/businesses/{businessId}/categories/reorder`
+- `PATCH /api/v1/categories/{categoryId}`
+- `PATCH /api/v1/categories/{categoryId}/archive`
+- `POST /api/v1/businesses/{businessId}/products`
+- `PATCH /api/v1/products/{productId}`
+- `PATCH /api/v1/products/{productId}/quick`
+- `PATCH /api/v1/products/{productId}/publication`
+- `POST /api/v1/products/{productId}/images/upload`
+- `PATCH /api/v1/products/{productId}/images/reorder`
+- `DELETE /api/v1/products/{productId}/images/{imageId}`
+- `GET /api/v1/public/showrooms/{subdomain}/products`
+- `GET /api/v1/public/showrooms/{subdomain}/products/{slug}`
+- `GET /api/v1/media/{mediaId}/{kind}`
+
+Para subir imagenes, `S3_ENDPOINT`, `S3_BUCKET`, `S3_ACCESS_KEY` y `S3_SECRET_KEY` deben apuntar a un storage S3-compatible existente y el bucket debe estar creado. El worker procesa la cola `media-processing` y genera variantes `THUMBNAIL`, `CARD` y `LARGE` en WebP.
 
 ## Calidad
 
@@ -212,4 +242,4 @@ infrastructure/
 
 ## Alcance actual
 
-M3 no implementa catálogo, productos, media upload/procesamiento, portal de descubrimiento, analytics ni administración global. Esos módulos pertenecen a hitos posteriores.
+M4 no implementa ofertas avanzadas, WhatsApp comercial completo, portal de descubrimiento, analytics ni administración global. Esos módulos pertenecen a hitos posteriores.
