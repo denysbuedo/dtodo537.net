@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { randomBytes, createHash } from 'node:crypto';
 import * as argon2 from 'argon2';
 import type { User } from '@prisma/client';
@@ -13,7 +13,7 @@ const PASSWORD_RESET_TTL_MS = 1000 * 60 * 30;
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(@Inject(PrismaService) private readonly prisma: PrismaService) {}
 
   async register(dto: RegisterDto) {
     const email = this.normalizeEmail(dto.email);

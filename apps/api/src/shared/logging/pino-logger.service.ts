@@ -13,7 +13,17 @@ export class PinoLoggerService implements LoggerService {
   }
 
   error(message: unknown, trace?: string, context?: string) {
-    this.logger.error({ context, trace, message });
+    if (message instanceof Error) {
+      this.logger.error({ context, trace, err: message }, message.message);
+      return;
+    }
+
+    if (typeof message === 'object' && message !== null) {
+      this.logger.error({ context, trace, ...message });
+      return;
+    }
+
+    this.logger.error({ context, trace }, String(message));
   }
 
   warn(message: unknown, context?: string) {

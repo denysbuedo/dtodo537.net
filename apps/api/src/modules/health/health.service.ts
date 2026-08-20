@@ -1,12 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { RedisProvider } from '../../shared/redis/redis.provider';
 import { PrismaService } from '../../shared/prisma/prisma.service';
 
 @Injectable()
 export class HealthService {
   constructor(
-    private readonly prisma: PrismaService,
-    private readonly redisProvider: RedisProvider,
+    @Inject(PrismaService) private readonly prisma: PrismaService,
+    @Inject(RedisProvider) private readonly redisProvider: RedisProvider,
   ) {}
 
   liveness() {
