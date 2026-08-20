@@ -405,11 +405,83 @@ main {
 }
 
 .theme-boutique .showroom-hero::after {
-  background: linear-gradient(90deg, rgba(255, 247, 237, 0.96), rgba(255, 247, 237, 0.58));
+  background: linear-gradient(180deg, rgba(255, 247, 237, 0.96), rgba(255, 247, 237, 0.72));
+}
+
+.theme-boutique {
+  background: #fff7ed;
+}
+
+.theme-boutique .showroom-hero-content {
+  justify-items: center;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.theme-boutique .showroom-hero h1 {
+  font-family: Georgia, 'Times New Roman', serif;
+  max-width: 820px;
+}
+
+.theme-boutique .showroom-logo {
+  border: 3px solid var(--showroom-accent);
+  border-radius: 999px;
+  height: 92px;
+  padding: 8px;
+  width: 92px;
+}
+
+.theme-boutique .showroom-actions {
+  justify-content: center;
+}
+
+.theme-boutique .showroom-actions a {
+  border-radius: 999px;
+  min-width: 132px;
+  justify-content: center;
+}
+
+.theme-boutique .showroom-section {
+  text-align: center;
 }
 
 .theme-commercial .showroom-hero::after {
-  background: linear-gradient(90deg, rgba(239, 246, 255, 0.96), rgba(239, 246, 255, 0.58));
+  background: linear-gradient(90deg, rgba(239, 246, 255, 0.98), rgba(239, 246, 255, 0.72));
+}
+
+.theme-commercial {
+  background: #f8fafc;
+}
+
+.theme-commercial .showroom-hero {
+  min-height: 58vh;
+}
+
+.theme-commercial .showroom-hero-content {
+  border-left: 6px solid var(--showroom-primary);
+  max-width: 1040px;
+  padding-left: 34px;
+}
+
+.theme-commercial .showroom-hero h1 {
+  font-size: 48px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.theme-commercial .showroom-actions a {
+  border-radius: 2px;
+  text-transform: uppercase;
+}
+
+.theme-commercial .showroom-section {
+  grid-template-columns: 220px 1fr;
+  width: min(100%, 1040px);
+}
+
+.theme-commercial .showroom-section h2 {
+  color: var(--showroom-primary);
+  text-transform: uppercase;
 }
 
 @media (max-width: 680px) {
@@ -424,5 +496,19 @@ main {
 
   .showroom-hero h1 {
     font-size: 38px;
+  }
+
+  .theme-commercial .showroom-hero-content {
+    border-left: 0;
+    border-top: 6px solid var(--showroom-primary);
+    padding-left: 24px;
+  }
+
+  .theme-commercial .showroom-hero h1 {
+    font-size: 34px;
+  }
+
+  .theme-commercial .showroom-section {
+    grid-template-columns: 1fr;
   }
 }

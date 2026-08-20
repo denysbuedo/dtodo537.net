@@ -153,6 +153,7 @@ export default function ShowroomManagePage({ params }: { params: Promise<{ showr
             <p className="eyebrow">Showroom</p>
             <h1>{showroom.business.name}</h1>
             <p>Estado: {showroom.status}</p>
+            <p>Plantilla: {showroom.theme?.name ?? 'Minimal'}</p>
           </div>
           <div className="settings-actions">
             <Link href={`/preview/showrooms/${showroom.id}`}>Preview</Link>
@@ -226,7 +227,11 @@ export default function ShowroomManagePage({ params }: { params: Promise<{ showr
           <button type="submit">Guardar contacto</button>
         </form>
 
-        <form className="settings-panel" onSubmit={(event) => void submitForm(event, 'theme')}>
+        <form
+          key={`theme-${showroom.theme?.code ?? 'minimal'}-${showroom.themeConfiguration?.primaryColor ?? ''}`}
+          className="settings-panel"
+          onSubmit={(event) => void submitForm(event, 'theme')}
+        >
           <h2>Plantilla</h2>
           <label>
             Theme
@@ -265,7 +270,7 @@ export default function ShowroomManagePage({ params }: { params: Promise<{ showr
             </label>
           </div>
           <input name="fontFamily" type="hidden" value={showroom.themeConfiguration?.fontFamily ?? 'Inter'} />
-          <button type="submit">Aplicar theme</button>
+          <button type="submit">Aplicar plantilla</button>
         </form>
 
         <section className="settings-panel">
